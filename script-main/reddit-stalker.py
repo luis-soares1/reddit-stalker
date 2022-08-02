@@ -36,20 +36,34 @@ class CommentInteractionAbstractClass(ABC):
 
 class UserAbstractClass(ABC):
 
+    @abstractmethod
     def bot_instance():
         pass
 
+    @abstractmethod
     def block_user():
         pass
 
+    @abstractmethod
     def unblock_user():
         pass
 
+    @abstractmethod
+    def get_user_comments_txt():
+        pass
+
+    @abstractmethod
     def _get_user(usr_name: str):
         pass
 
+    @abstractmethod
+    def _fetch_lastest_user_comment():
+        pass
+
+    @abstractmethod
     def _fetch_user_comments():
         pass
+
 
 
 class CommentIntermediateImpl(CommentAbstractClass):
@@ -95,13 +109,46 @@ class CommentAsASCII(CommentIntermediateImpl):
 
 
 class StalkingBot(UserAbstractClass):
+    def __init__(self) -> None:
+        self._reddit = self.bot_instance()
+        super().__init__()
+
+    def bot_instance(self):
+        return praw.Reddit(
+            "bot1", user_agent="Stalking Bot:v1.0.0 (by u/NetflixPremium)"
+            )
     
-    def bot_instance():
-        reddit = praw.Reddit(
-                "bot1", user_agent="Stalking Bot:v1.0.0 (by u/NetflixPremium)"
-                )
+    def block_user(self):
+        pass
+
+    def unblock_user(self):
+        pass
+
+    
+    def get_user_comments_txt(self, usr: str):
+        #get user, comments as id, transform into txt
+        self._get_user(usr)
+        self._fetch_user_comments()
+
+    def _get_user(self, usr_name: str):
+        return self._reddit.redditor(usr_name)
+        
+    def _fetch_specific_comment(self, comment_id: str):
+        return self._reddit.comment(comment_id).body
+
+    def _fetch_user_comments(self) -> dict:
+        """_summary_
+
+        Returns:
+            dict: returns a dict with {comment_id: comment in text}
+        """
+        comment_ids = (c.id for c in self._reddit.redditor("NetflixPremium").comments.new())
+        return {c_id: self._reddit.comment(c_id).body[:10] for c_id in comment_ids}
+        
 
 
+bot = StalkingBot()
+print(bot._fetch_user_comments())
 
     
 
