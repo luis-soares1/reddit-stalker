@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
+from tests import tests
+from pyfiglet import figlet_format
 import praw
 
 class CommentAbstractClass(ABC):
-
-    bag_of_words = []
     
     @abstractmethod
     def comment() -> None:
@@ -11,10 +11,6 @@ class CommentAbstractClass(ABC):
     
     @abstractmethod
     def post_comment() -> None:
-        pass
-
-    @abstractmethod
-    def edit() -> None:
         pass
 
     @abstractmethod
@@ -57,7 +53,7 @@ class UserAbstractClass(ABC):
         pass
 
     @abstractmethod
-    def _fetch_lastest_user_comment():
+    def _fetch_specific_comment():
         pass
 
     @abstractmethod
@@ -68,35 +64,28 @@ class UserAbstractClass(ABC):
 
 class CommentIntermediateImpl(CommentAbstractClass):
     
-    def post_comment() -> None:
-        pass
+    def __init__(self) -> None:
+        super().__init__()
 
-    def delete() -> None:
-        pass
+    def post_comment(self, _reddit: praw.Reddit, comment_to_reply_id: str) -> None:
+        message = self.retrieve_comment()
+        _reddit.comment(comment_to_reply_id).reply(body=message)
 
-class CommentText(CommentIntermediateImpl):
-        
-    def comment() -> None:
-        pass
-    
-    def edit() -> None:
-        pass
+    def delete(self, _reddit: praw.Reddit, comment_id: str) -> None:
+        _reddit.comment(comment_id).delete()
+
 
 class CommentHyperlink(CommentIntermediateImpl):
    
     def comment() -> None:
         pass
 
-    def edit() -> None:
-        pass
 
 class CommentAsImage(CommentIntermediateImpl):
     
     def comment() -> None:
         pass
-    
-    def edit() -> None:
-        pass
+
 
 
 class CommentAsASCII(CommentIntermediateImpl):
@@ -104,13 +93,11 @@ class CommentAsASCII(CommentIntermediateImpl):
     def comment() -> None:
         pass
     
-    def edit() -> None:
-        pass
-
 
 class StalkingBot(UserAbstractClass):
+    
     def __init__(self) -> None:
-        self._reddit = self.bot_instance()
+        self.reddit = self.bot_instance()
         super().__init__()
 
     def bot_instance(self):
@@ -123,32 +110,40 @@ class StalkingBot(UserAbstractClass):
 
     def unblock_user(self):
         pass
-
     
     def get_user_comments_txt(self, usr: str):
-        #get user, comments as id, transform into txt
-        self._get_user(usr)
-        self._fetch_user_comments()
+        return self._fetch_user_comments(self._get_user(usr))
 
     def _get_user(self, usr_name: str):
-        return self._reddit.redditor(usr_name)
+        return self._reddit.redditor(usr_name).name
         
     def _fetch_specific_comment(self, comment_id: str):
         return self._reddit.comment(comment_id).body
 
-    def _fetch_user_comments(self) -> dict:
+    def _fetch_user_comments(self, usr) -> dict:
         """_summary_
 
         Returns:
             dict: returns a dict with {comment_id: comment in text}
         """
-        comment_ids = (c.id for c in self._reddit.redditor("NetflixPremium").comments.new())
+        comment_ids = (c.id for c in self._reddit.redditor(usr).comments.new())
         return {c_id: self._reddit.comment(c_id).body[:10] for c_id in comment_ids}
         
 
+class InsultFactory:
+    pass
+    #@staticmethod
+    
+    
 
 bot = StalkingBot()
-print(bot._fetch_user_comments())
+a = bot.get_user_comments_txt("homemestupendo")
+
+text = CommentIntermediateImpl()
+text.post_comment()
+
+
+# print(text.__dict__)
 
     
 
