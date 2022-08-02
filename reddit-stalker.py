@@ -22,6 +22,7 @@ class CommentAbstractClass(ABC):
         pass
 
 
+
 class CommentInteractionAbstractClass(ABC):
 
     @abstractmethod
@@ -34,6 +35,9 @@ class CommentInteractionAbstractClass(ABC):
 
 
 class UserAbstractClass(ABC):
+
+    def bot_instance():
+        pass
 
     def block_user():
         pass
@@ -48,61 +52,55 @@ class UserAbstractClass(ABC):
         pass
 
 
+class CommentIntermediateImpl(CommentAbstractClass):
+    
+    def post_comment() -> None:
+        pass
 
+    def delete() -> None:
+        pass
 
-class CommentText(CommentAbstractClass):
+class CommentText(CommentIntermediateImpl):
         
     def comment() -> None:
         pass
     
-    def post_comment() -> None:
-        pass
-
     def edit() -> None:
         pass
 
-    def delete() -> None:
-        pass
-class CommentHyperlink(CommentAbstractClass):
+class CommentHyperlink(CommentIntermediateImpl):
    
     def comment() -> None:
         pass
-    
-    def post_comment() -> None:
-        pass
 
     def edit() -> None:
         pass
 
-    def delete() -> None:
-        pass
-class CommentAsImage(CommentAbstractClass):
+class CommentAsImage(CommentIntermediateImpl):
     
     def comment() -> None:
         pass
     
-    def post_comment() -> None:
-        pass
-
     def edit() -> None:
         pass
 
-    def delete() -> None:
-        pass
 
-class CommentAsASCII(CommentAbstractClass):
+class CommentAsASCII(CommentIntermediateImpl):
     
     def comment() -> None:
         pass
     
-    def post_comment() -> None:
-        pass
-
     def edit() -> None:
         pass
 
-    def delete() -> None:
-        pass
+
+class StalkingBot(UserAbstractClass):
+    
+    def bot_instance():
+        reddit = praw.Reddit(
+                "bot1", user_agent="Stalking Bot:v1.0.0 (by u/NetflixPremium)"
+                )
+
 
 
     
