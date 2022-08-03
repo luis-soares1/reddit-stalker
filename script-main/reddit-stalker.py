@@ -3,6 +3,7 @@ from email.policy import default
 from pyfiglet import figlet_format
 from apihandler.insult_api_handler import InsultAPIHandler as api
 from pyfiglet import figlet_format as f
+from time import sleep
 import praw
 
 class CommentAbstractClass(ABC):
@@ -10,7 +11,6 @@ class CommentAbstractClass(ABC):
     @abstractmethod
     def comment() -> None:
         pass
-    
 
 class CommentInteractionAbstractClass(ABC):
 
@@ -74,8 +74,9 @@ class BotCommentAbstractClass(ABC):
 
 
 class CommentBot(BotCommentAbstractClass):
-    
+
     def __init__(self) -> None:
+        self.is_bot_running = False
         super().__init__()
 
     def post_comment(self, _reddit: praw.Reddit, comment_to_reply_id: str) -> None:
@@ -99,7 +100,7 @@ class CommentHyperlink(CommentAbstractClass):
         pass
 
 class CommentAsImage(CommentAbstractClass):
-    
+
     def comment(self) -> None:
         pass
 
@@ -110,36 +111,54 @@ class CommentAsASCII(CommentAbstractClass):
     
 class StalkingBot(BotActionsExcpCommentAbstractClass):
     
+    user_last_comment_key = None
+
     def __init__(self) -> None:
         self.reddit = self.bot_instance()
         super().__init__()
+
 
     def bot_instance(self):
         return praw.Reddit(
             "bot1", user_agent="Stalking Bot:v1.0.0 (by u/NetflixPremium)"
             )
     
+
     def block_user(self):
         pass
+
 
     def unblock_user(self):
         pass
     
+
     def get_user_comments_txt(self, usr: str):
         return self._fetch_user_comments(self._get_user(usr))
 
+
     def fetch_user_last_comment(self, usr: str):
         for key in self.get_user_comments_txt(usr).keys():
+            #StalkingBot.user_last_comment_key = key
             return key
+            
 
-    def check_for_new_comments(self):
-        pass
+    def check_for_new_comments(self, usr: str):
+        while(True):
+            print("Checking if user posted comment")
+            inside_loop_comment = self.fetch_user_last_comment(usr)
+            if StalkingBot.user_last_comment_key != inside_loop_comment:
+                print("New comment")
+                StalkingBot.user_last_comment_key = inside_loop_comment
+                return True
+            
 
     def _get_user(self, usr_name: str):
         return self.reddit.redditor(usr_name).name
         
+
     def _fetch_specific_comment(self, comment_id: str):
         return self.reddit.comment(comment_id).body
+
 
     def _fetch_user_comments(self, usr) -> dict:
         """_summary_
@@ -152,30 +171,19 @@ class StalkingBot(BotActionsExcpCommentAbstractClass):
         
 
 
-    
-    
-    
-
-# bot = StalkingBot()
-# a = bot.get_user_comments_txt("homemestupendo")
-
-
-
 sb = StalkingBot()
-a = sb.fetch_user_last_comment("homemestupendo")
-print(a)
-
 cb = CommentBot()
-cb.post_comment(sb.reddit, a)
 
-# cb = CommentBot()
-# cb.post_comment(sb.reddit, )
+cb.is_bot_running = True
+
+while(cb.is_bot_running):
+    #gets last comment
+    sb.fetch_user_last_comment("NetflixPremium")
+    if sb.check_for_new_comments("NetflixPremium"):
+        cb.post_comment(sb.reddit, StalkingBot.user_last_comment_key)
 
 
 
-# c = CommentAsASCII()
-# print(c.comment())
-# print(text.__dict__)
 
     
 
