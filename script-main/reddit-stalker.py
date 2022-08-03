@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from tests import tests
 from pyfiglet import figlet_format
 import praw
 
