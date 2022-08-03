@@ -5,7 +5,7 @@ import requests
 
 class InsultAPIHandler(APIHandler):
     
-    def request_data(url: str):
+    def request_data():
         return bs(requests.get("https://insult.mattbas.org/api/en/insult.html") \
                             .content, "html.parser") \
                             .find("h1") \
